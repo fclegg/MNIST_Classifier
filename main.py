@@ -22,11 +22,11 @@ class Net(nn.Module):
             nn.Conv2d(32, 64, (3, 3)),
             nn.ReLU(),
             nn.MaxPool2d(2),
-            # nn.Dropout(0.25),
+            nn.Dropout(0.25),
             nn.Flatten(1),
             nn.Linear(9216, 128),
             nn.ReLU(),
-            # nn.Dropout(0.5),
+            nn.Dropout(0.5),
             nn.Linear(128, 10),
             nn.LogSoftmax(dim=1)
         )
@@ -86,7 +86,6 @@ def test(test_loader):
     dataiter = iter(test_loader)
     images, labels = next(dataiter)
 
-    #imshow(utils.make_grid(images), cmap='gray', vmin=0, vmax=255)
     # print('GroundTruth: ', ' '.join(f'{labels[j]:5s}' for j in range(4)))
 
     print('GroundTruth: ')
@@ -103,6 +102,21 @@ def test(test_loader):
     print('\nPredicted: ')
     for j in range(4):
         print(str(predicted[1][j]), end=", ")
+    misses = 0
+    for i in range(len(predicted[1])):
+
+        if predicted[1][i] != labels[i]:
+            print(predicted[1][i] == labels[i], str(predicted[1][i]), str(labels[i]), "index: ", i, end = "\n")
+
+            misses +=1
 
 
+    print("misses: ", misses / len(predicted[1]))
+    while True:
+        z = int(input(""))
+        image = images[z]
+        image = np.array(image, dtype= 'float')
+        pixels = image.reshape((28,28))
+        plt.imshow(pixels,cmap='gray')
+        plt.show()
 main()

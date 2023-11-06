@@ -22,11 +22,11 @@ class Net(nn.Module):
             nn.Conv2d(32, 64, (3, 3)),
             nn.ReLU(),
             nn.MaxPool2d(2),
-            nn.Dropout(0.25),
+            # nn.Dropout(0.25),
             nn.Flatten(1),
             nn.Linear(9216, 128),
             nn.ReLU(),
-            nn.Dropout(0.5),
+            # nn.Dropout(0.5),
             nn.Linear(128, 10),
             nn.LogSoftmax(dim=1)
         )
@@ -52,8 +52,9 @@ def main():
     train_loader = DataLoader(training_data, train_batch_size) #maybe add num_workers or shuffle later?
     test_loader = DataLoader(testing_data, test_batch_size)
 
-    for epoch in range(4):
-        if not (os.path.exists(NET_PATH)):
+    if not (os.path.exists(NET_PATH)):
+        for epoch in range(22):
+            print(epoch)
             train(net, train_loader, optimizer, criterion, epoch)
     test(test_loader)
 
@@ -103,17 +104,20 @@ def test(test_loader):
     for j in range(4):
         print(str(predicted[1][j]), end=", ")
     misses = 0
+    print()
+
     for i in range(len(predicted[1])):
 
         if predicted[1][i] != labels[i]:
-            print(predicted[1][i] == labels[i], str(predicted[1][i]), str(labels[i]), "index: ", i, end = "\n")
+            print("Wrong prediction: Guessed", str(predicted[1][i].item()), "for a(n)", str(labels[i].item()), "at index", i, end = "\n")
 
             misses +=1
 
 
     print("misses: ", misses / len(predicted[1]))
+
     while True:
-        z = int(input(""))
+        z = int(input("Enter an index to view image: "))
         image = images[z]
         image = np.array(image, dtype= 'float')
         pixels = image.reshape((28,28))
